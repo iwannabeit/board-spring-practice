@@ -1,11 +1,15 @@
 package board.boardspring.Controller;
 
+import board.boardspring.Domain.AnswerForm;
 import board.boardspring.Domain.Question;
+import board.boardspring.Domain.QuestionForm;
 import board.boardspring.Repository.QuestionRepository;
 import board.boardspring.Service.QuestionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,20 +33,23 @@ public class QuestionController {
     }
 
     @GetMapping("/question/detail/{id}")
-    public String detail(Model model, @PathVariable("id") Integer id){
+    public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm){
         Question question = this.questionService.getQuestion(id);
         model.addAttribute("question", question);
         return "question_detail";
     }
 
     @GetMapping("/question/create")
-    public String questionCreate(){
+    public String questionCreate(QuestionForm questionForm){
         return "question_form";
     }
 
     @PostMapping("/question/create")
-    public String questionCreate(@RequestParam(value = "subject") String subject, @RequestParam(value = "content") String content){
-        this.questionService.create(subject, content);
+    public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            return "question_form";
+        }
+        this.questionService.create(questionForm.getSubject(), questionForm.getContent());
         return "redirect:/question/list"; //질문 저장후 질문 목록으로 이동
     }
 
