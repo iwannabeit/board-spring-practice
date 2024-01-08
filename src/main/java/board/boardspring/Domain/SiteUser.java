@@ -17,6 +17,6 @@ public class SiteUser {
 
     private String password;
 
-    @Column(unique = true)
+    @Column(unique = true) //유일한 값만 저장할 수 있습니다.
     private String email;
 }
